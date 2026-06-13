@@ -2,7 +2,7 @@
   color-scheme: light;
   font-family: Inter, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
   color: #191f28;
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 * {
@@ -12,9 +12,7 @@
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(49, 130, 246, 0.08), transparent 28%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 52%, #f2f4f6 100%);
+  background: #ffffff;
 }
 
 button,
@@ -51,6 +49,10 @@ select {
   letter-spacing: 0;
 }
 
+.brand-panel h1 {
+  color: #3182f6;
+}
+
 .lead {
   max-width: 680px;
   margin: 28px 0 0;
@@ -62,11 +64,11 @@ select {
 }
 
 .guide-note {
-  margin: 14px 0 0;
-  color: #8b95a1;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.55;
+  margin: 12px 0 0;
+  color: #b0b8c1;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .eyebrow {
@@ -82,8 +84,8 @@ select {
 .process-panel {
   border: 1px solid #eef1f4;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 18px 45px rgba(25, 31, 40, 0.08);
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(25, 31, 40, 0.06);
   padding: 28px;
 }
 
@@ -120,9 +122,9 @@ select {
   place-items: center;
   gap: 10px;
   padding: 28px;
-  border: 1px dashed #b0c8f9;
+  border: 1px solid #e5e8eb;
   border-radius: 8px;
-  background: #f5f9ff;
+  background: #f9fafb;
   color: #191f28;
   text-align: center;
   cursor: pointer;
@@ -242,7 +244,7 @@ button:disabled {
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: #3182f6;
+  background: linear-gradient(90deg, #8bbcff 0%, #4c96ff 45%, #3182f6 100%);
   transition: width 0.35s ease;
 }
 
@@ -276,7 +278,7 @@ button:disabled {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 360px 1fr;
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .result-sidebar {
@@ -359,9 +361,7 @@ button:disabled {
 
 .viewer-wrap {
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(248, 250, 252, 0.5)),
-    #f8fafc;
+  background: #f8fafc;
 }
 
 #viewer {

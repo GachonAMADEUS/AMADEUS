@@ -3,7 +3,6 @@ const uploadId = params.get("upload_id");
 const progressBar = document.querySelector("#progressBar");
 const stageLabel = document.querySelector("#stageLabel");
 const timeLeft = document.querySelector("#timeLeft");
-const skipButton = document.querySelector("#skipButton");
 const errorText = document.querySelector("#errorText");
 const stages = Array.from(document.querySelectorAll(".stage"));
 
@@ -41,24 +40,11 @@ function renderJob(job) {
   });
 
   if (job.status === "completed") {
-    skipButton.disabled = false;
-    skipButton.textContent = "결과 보기";
     window.location.href = `/result?upload_id=${uploadId}`;
   } else if (job.status === "failed") {
-    skipButton.disabled = false;
-    skipButton.textContent = "로그 확인하기";
     timeLeft.textContent = "실패";
-  } else {
-    skipButton.disabled = true;
-    skipButton.textContent = "결과 준비 중";
   }
 }
-
-function goResult() {
-  window.location.href = `/result?upload_id=${uploadId || ""}`;
-}
-
-skipButton.addEventListener("click", goResult);
 
 async function pollJob() {
   if (!uploadId) {
