@@ -43,16 +43,9 @@ This repository contains the public workflow documentation, project scaffold, an
 
 ## Workflow At A Glance
 
-```mermaid
-flowchart LR
-  A["Foot video"] --> B["Frame filtering"]
-  B --> C["YOLO/SAM masks"]
-  C --> D["COLMAP SfM"]
-  D --> E["2DGS mesh"]
-  E --> F["Scale correction"]
-  F --> G["STL + JSON"]
-  G --> H["Bambu validation"]
-```
+<p align="center">
+  <img src="docs/assets/workflow-at-a-glance.png" alt="AMADEUS workflow from smartphone video to scaled mesh, report, and 3D print" width="100%">
+</p>
 
 ## Prototype Output Gallery
 
