@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Large/private data
+data/raw/
+data/private/
+models/*
+!models/.gitkeep
+outputs/*
+!outputs/.gitkeep
+
+# 3D/generated artifacts
+*.ply
+*.stl
+*.3mf
+*.gcode
+*.obj
+
+# Logs/reports generated during local runs
+*.log
+report*.json
+report*.txt
+
+# Docker/cache
+.cache/
+build/
+dist/
