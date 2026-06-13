@@ -8,21 +8,9 @@ AMADEUS reconstructs a real-scale 3D foot mesh from a smartphone RGB video and p
 
 ## End-to-End Flow
 
-```mermaid
-flowchart TD
-  A["Smartphone foot video"] --> B["Frame extraction and quality filtering"]
-  B --> C["YOLOv11n-seg foot/checkerboard segmentation"]
-  C --> D["SAM pixel-level mask refinement"]
-  D --> E["COLMAP SfM camera poses and sparse point cloud"]
-  E --> F["2D Gaussian Splatting training"]
-  F --> G["PLY mesh extraction"]
-  G --> H["Floating artifact and checkerboard removal"]
-  H --> I["A4 checkerboard scale factor estimation"]
-  I --> J["Real-size mesh scaling"]
-  J --> K["Open3D/Trimesh postprocessing"]
-  K --> L["Measurement JSON and final STL"]
-  L --> M["Bambu Studio slicing and print validation"]
-```
+<p align="center">
+  <img src="assets/workflow-at-a-glance.png" alt="AMADEUS end-to-end workflow from smartphone video to scaled mesh, report, and 3D print" width="100%">
+</p>
 
 ## 1. Video Input and Frame Filtering
 
