@@ -1,10 +1,10 @@
 # AMADEUS Workflow
 
-이 문서는 AMADEUS 과제 계획서의 기술 흐름을 GitHub 공개용으로 정리한 워크플로우입니다.
+This document summarizes the public technical workflow for AMADEUS.
 
 ## Goal
 
-스마트폰 RGB 영상만으로 사용자의 발 형상을 3D 재구성하고, 수제화 제작 보조에 사용할 수 있는 실제 크기 STL/JSON 결과물을 생성합니다. 고가의 3D 발 스캐너나 LiDAR 전용 장비 없이 접근 가능한 입력으로 제조 가능한 결과물을 만드는 것이 목표입니다.
+AMADEUS reconstructs a real-scale 3D foot mesh from a smartphone RGB video and produces outputs that can support custom shoe-making workflows. The system is designed to reduce reliance on expensive 3D foot scanners, LiDAR-specific hardware, and fully manual shoe-last production steps.
 
 ## End-to-End Flow
 
@@ -16,42 +16,42 @@ flowchart TD
   D --> E["COLMAP SfM camera poses and sparse point cloud"]
   E --> F["2D Gaussian Splatting training"]
   F --> G["PLY mesh extraction"]
-  G --> H["Floating artifacts and checkerboard removal"]
+  G --> H["Floating artifact and checkerboard removal"]
   H --> I["A4 checkerboard scale factor estimation"]
   I --> J["Real-size mesh scaling"]
   J --> K["Open3D/Trimesh postprocessing"]
-  K --> L["Measurements JSON and final STL"]
+  K --> L["Measurement JSON and final STL"]
   L --> M["Bambu Studio slicing and print validation"]
 ```
 
 ## 1. Video Input and Frame Filtering
 
-입력은 사용자가 스마트폰으로 촬영한 발 영상입니다.
+The input is a smartphone video of the user's foot and a checkerboard reference.
 
-처리 내용:
+Processing steps:
 
-- FFmpeg/OpenCV 기반 프레임 추출
-- 흔들림, 과노출, 흐림 등 품질 저하 프레임 제거
-- COLMAP/2DGS에 사용할 대표 프레임 선별
+- Extract frames with FFmpeg/OpenCV.
+- Remove low-quality frames caused by blur, overexposure, or heavy shake.
+- Select representative frames for COLMAP and 2DGS.
 
-권장 입력:
+Recommended input:
 
-- 발 전체와 A4 체커보드가 동시에 보이는 영상
-- 발 주변을 천천히 회전하며 촬영한 영상
-- 반사나 그림자가 강하지 않은 조명
+- A video where the full foot and A4 checkerboard are visible together.
+- Slow orbiting camera motion around the foot.
+- Stable lighting with limited reflections and shadows.
 
 ## 2. Foot and Checkerboard Segmentation
 
-발과 체커보드를 분리하기 위해 YOLOv11n-seg 기반 segmentation을 사용합니다.
+YOLOv11n-seg is used to separate the foot and checkerboard regions.
 
-처리 내용:
+Processing steps:
 
-- 직접 촬영한 발 이미지 데이터셋 구축
-- Roboflow 등을 통한 라벨링/증강
-- foot mask, checkerboard mask 생성
-- YOLO segmentation 결과를 SAM으로 후처리하여 더 정밀한 pixel-level mask 생성
+- Build a foot-specific image dataset.
+- Label and augment foot/checkerboard masks.
+- Fine-tune YOLOv11n-seg.
+- Refine YOLO masks with SAM for pixel-level segmentation quality.
 
-산출물:
+Expected outputs:
 
 - `segmentation/foot/`
 - `segmentation/checkerboard/`
@@ -59,112 +59,112 @@ flowchart TD
 
 ## 3. COLMAP SfM
 
-COLMAP은 프레임 간 카메라 포즈를 추정하고 sparse point cloud를 생성합니다.
+COLMAP estimates camera poses and generates a sparse point cloud.
 
-처리 내용:
+Processing steps:
 
-- SIFT 기반 feature extraction
-- sequential/exhaustive matching
-- 발과 체커보드가 포함된 영역 중심의 matching
-- `cameras.bin`, `images.bin`, `points3D.bin` 생성
+- SIFT feature extraction
+- Sequential or exhaustive image matching
+- Camera pose estimation
+- Sparse model export as `cameras.bin`, `images.bin`, and `points3D.bin`
 
-주의점:
+Notes:
 
-- 발 표면은 매끈해서 특징점이 적습니다.
-- 촬영 시 발 또는 주변에 추적 가능한 시각적 특징이 충분해야 합니다.
-- A4 체커보드는 scale 보정을 위해 반드시 함께 촬영합니다.
+- Foot surfaces often have weak texture, which can make feature matching difficult.
+- The capture scene should include enough trackable visual features.
+- The A4 checkerboard must be captured with the foot so scale can be recovered later.
 
 ## 4. 2D Gaussian Splatting Reconstruction
 
-COLMAP 결과를 2DGS의 초기 입력으로 사용하여 발 표면을 재구성합니다.
+COLMAP outputs are used as the initialization for 2D Gaussian Splatting.
 
-2DGS 채택 이유:
+Why 2DGS:
 
-- 3DGS의 3D ellipsoid 대신 2D disk 기반 Gaussian을 사용
-- 단일 오브젝트 표면을 더 직접적으로 모델링
-- 발바닥/발등의 닫힌 구간 형성에 유리
-- watertight mesh 달성이 상대적으로 쉬움
+- It uses 2D disk-based Gaussians rather than 3D ellipsoids.
+- It can model a single object surface more directly.
+- It is better suited for smooth, watertight surface reconstruction in this workflow.
+- It avoids the additional complexity previously required by 3DGS + SuGaR style mesh extraction.
 
-산출물:
+Expected outputs:
 
 - 2DGS reconstruction PLY
-- mesh extraction 결과 PLY
+- Extracted mesh PLY
 
 ## 5. PLY Postprocessing
 
-2DGS 결과에는 발 외 부유물, 체커보드 영역, 불필요한 바닥 영역이 포함될 수 있습니다.
+The raw 2DGS result may include floating artifacts, checkerboard remnants, floor fragments, or open boundaries.
 
-처리 내용:
+Processing steps:
 
-- floating artifacts 제거
-- checkerboard 영역 제거
-- 발바닥 절단면 처리
-- 구멍 메우기
-- watertight mesh 형성
+- Remove floating artifacts.
+- Remove checkerboard/floor geometry.
+- Trim the foot mesh.
+- Fill holes and cap cut planes.
+- Build a watertight mesh when possible.
 
-사용 기술:
+Tools:
 
 - Open3D
 - Trimesh
-- 필요 시 PyMeshLab/MeshFix 계열 repair
+- Optional PyMeshLab/MeshFix-style repair stages
 
 ## 6. Scale Factor Estimation
 
-2D reconstruction 결과는 절대 스케일이 없기 때문에 실제 크기 보정이 필요합니다.
+The reconstructed 3D scene does not have an absolute real-world scale. A scale factor is estimated using the checkerboard.
 
-처리 내용:
+Processing steps:
 
-- 함께 촬영한 A4 체커보드 영역의 PLY 분포 추출
-- 실제 A4 크기 또는 체커보드 한 칸 크기와 재구성 크기 비교
-- scale factor 계산
-- 발 mesh에 scale factor 적용
+- Extract the checkerboard distribution from the reconstructed PLY.
+- Compare reconstructed dimensions with the known A4/checkerboard size.
+- Compute a scale factor.
+- Apply the scale factor to the foot mesh.
 
-기준 예시:
+Reference examples:
 
 - A4 paper: `297 mm x 210 mm`
-- checker square: 프로젝트 설정에 따라 별도 지정
+- Checker square size: configurable per printed board
 
 ## 7. Measurement and Export
 
-스케일이 적용된 mesh에서 주요 치수를 측정하고 출력합니다.
+After scaling, the mesh can be measured and exported.
 
-예상 치수:
+Expected measurements:
 
-- foot length
-- foot width
-- instep height
-- bounding box
-- mesh volume/area where available
+- Foot length
+- Foot width
+- Instep height
+- Bounding box
+- Mesh volume/area where available
 
-최종 산출물:
+Final outputs:
 
-- final foot STL
-- measurements JSON
-- processing report JSON/TXT
+- Final foot STL
+- Measurement JSON
+- Processing report JSON/TXT
 
 ## 8. Bambu Studio Validation
 
-완성된 STL을 Bambu Studio 또는 OrcaSlicer로 slicing하고 3D 프린터로 출력 검증합니다.
+The final STL is loaded into Bambu Studio or OrcaSlicer for slicing and print validation.
 
-검증 항목:
+Validation checklist:
 
-- slicer에서 정상 로딩되는지
-- support/floating region 경고 여부
-- printability
-- 실제 발과 출력물 크기 비교
+- The STL loads correctly.
+- The slicer does not report critical non-manifold errors.
+- Floating region/support warnings are reviewed.
+- Printed output is compared against the real foot scale.
 
 ## Known Limitations
 
-- 한국인/동양인 발 이미지 데이터셋 부족
-- 발 표면의 낮은 texture로 인한 COLMAP 실패 가능성
-- 촬영 품질과 조명에 따른 segmentation/reconstruction 품질 편차
-- 모델 가중치와 샘플 영상은 개인정보와 용량 문제로 별도 배포 필요
+- Lack of a large Korean/East Asian foot image dataset
+- COLMAP failure risk due to low texture on smooth foot surfaces
+- Sensitivity to capture quality, lighting, and motion blur
+- Model weights and sample videos require separate distribution due to privacy and file-size constraints
 
 ## Future Extensions
 
 - FastAPI backend
-- React Native mobile capture app
+- React Native capture app
 - Bambu Cloud upload integration
-- custom shoe last generation
-- sports/outdoor custom equipment workflow
-- hand/face/dental medical-assistive adaptation
+- Custom shoe-last generation
+- Sports/outdoor custom equipment workflow
+- Adaptation to hand, face, dental, or medical-assistive modeling

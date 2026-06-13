@@ -1,10 +1,10 @@
 # AMADEUS
 
-AI 기반 족적 형태 분석 및 수제화 제작 보조 시스템입니다.
+AMADEUS is an AI-assisted foot morphology analysis and custom shoe-making support system.
 
-AMADEUS는 스마트폰으로 촬영한 발 영상과 체커보드를 입력으로 받아 발 형상을 3D로 재구성하고, 실제 크기 스케일 보정, 메쉬 후처리, STL/JSON 산출, Bambu Studio 기반 3D 프린팅 검증까지 이어지는 end-to-end 워크플로우를 목표로 합니다.
+The project aims to reconstruct a user's foot in 3D from a smartphone RGB video, recover real-world scale using a checkerboard reference, postprocess the mesh, export STL/JSON outputs, and validate the result through Bambu Studio slicing and 3D printing.
 
-> 현재 저장소는 공개용 워크플로우와 실행 문서를 먼저 정리한 상태입니다. 최신 구현 소스코드는 이후 이 구조에 맞춰 반영할 예정입니다.
+> This repository currently contains the public workflow documentation and repository scaffold. The latest implementation source code will be added to this structure after final team integration.
 
 ## Pipeline
 
@@ -13,11 +13,11 @@ Smartphone foot video
 -> Frame extraction and quality filtering
 -> YOLOv11n-seg foot/checkerboard segmentation
 -> SAM mask refinement
--> COLMAP SfM camera pose estimation and sparse point cloud
+-> COLMAP SfM camera pose estimation and sparse point cloud generation
 -> 2D Gaussian Splatting reconstruction
 -> 2DGS PLY postprocessing
 -> A4 checkerboard based scale factor estimation
--> Real-size mesh scaling and measurements
+-> Real-size mesh scaling and measurement
 -> Watertight STL/JSON export
 -> Bambu Studio slicing and print validation
 ```
@@ -28,44 +28,46 @@ Smartphone foot video
 AMADEUS/
   README.md
   docs/
-    WORKFLOW.md              # 전체 기술 워크플로우
-    CAPTURE_GUIDE.md         # 발/체커보드 촬영 가이드
-    REPRODUCIBILITY.md       # Docker, 모델, 실행 재현 계획
-    OUTPUT_SPEC.md           # 중간/최종 산출물 정의
+    WORKFLOW.md              # Full technical workflow
+    CAPTURE_GUIDE.md         # Foot/checkerboard capture guide
+    REPRODUCIBILITY.md       # Docker, model, and execution plan
+    OUTPUT_SPEC.md           # Intermediate and final output definitions
+    assets/
+      capture-orbit-guide.png
   src/
-    .gitkeep                 # 최종 파이프라인 코드 반영 예정
+    .gitkeep                 # Final pipeline code will be added here
   docker/
-    .gitkeep                 # 2DGS/COLMAP 실행 환경 반영 예정
+    .gitkeep                 # COLMAP/2DGS Docker environment will be added here
   data/
-    samples/.gitkeep         # 공개 가능한 샘플 입력만 배치
+    samples/.gitkeep         # Public demo samples only
   models/
-    .gitkeep                 # 모델 파일은 직접 커밋하지 않음
+    .gitkeep                 # Model weights are not committed directly
   outputs/
-    .gitkeep                 # 실행 결과는 Git 추적 제외
+    .gitkeep                 # Local generated outputs are ignored
 ```
 
 ## Main Documents
 
-- [전체 워크플로우](docs/WORKFLOW.md)
-- [촬영 및 데이터 가이드](docs/CAPTURE_GUIDE.md)
-- [재현 환경 및 배포 계획](docs/REPRODUCIBILITY.md)
-- [산출물 명세](docs/OUTPUT_SPEC.md)
+- [Workflow](docs/WORKFLOW.md)
+- [Capture Guide](docs/CAPTURE_GUIDE.md)
+- [Reproducibility Plan](docs/REPRODUCIBILITY.md)
+- [Output Specification](docs/OUTPUT_SPEC.md)
 
 ## Core Technologies
 
-- COLMAP: SfM, camera pose estimation, sparse point cloud generation
+- COLMAP: SfM, camera pose estimation, and sparse point cloud generation
 - 2D Gaussian Splatting: disk-based Gaussian representation and mesh reconstruction
 - YOLOv11n-seg + SAM: foot/checkerboard segmentation and pixel-level mask refinement
-- Open3D / Trimesh: mesh scaling, cleanup, hole filling, watertight postprocessing
+- Open3D / Trimesh: mesh scaling, cleanup, hole filling, and watertight postprocessing
 - Bambu Studio: slicing and 3D printing validation
 
 ## Open Source Release Plan
 
-1. Publish workflow and execution documents.
-2. Add final pipeline source code after team integration.
-3. Provide Docker-based reproducible environment.
-4. Link trained YOLO segmentation weights through Hugging Face or release artifacts.
-5. Add sample input/output demo where privacy and file-size constraints allow.
+1. Publish workflow and execution documentation.
+2. Add the final pipeline source code after team integration.
+3. Provide a Docker-based reproducible runtime.
+4. Link trained YOLO segmentation weights through Hugging Face or release assets.
+5. Add public demo input/output samples where privacy and file-size constraints allow.
 
 ## Privacy Note
 

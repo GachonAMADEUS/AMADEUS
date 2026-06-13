@@ -1,10 +1,10 @@
 # Reproducibility Plan
 
-AMADEUS는 다른 컴퓨터에서도 같은 파이프라인을 재현할 수 있도록 Docker 기반 실행 환경을 목표로 합니다.
+AMADEUS aims to provide a Docker-based runtime so the same pipeline can be reproduced on another workstation.
 
 ## Target Environment
 
-권장 환경:
+Recommended environment:
 
 - Windows or Linux workstation
 - NVIDIA CUDA GPU
@@ -13,11 +13,11 @@ AMADEUS는 다른 컴퓨터에서도 같은 파이프라인을 재현할 수 있
 - Python 3.10+
 - Bambu Studio or OrcaSlicer
 
-macOS는 CUDA 기반 2DGS Docker 실행에 적합하지 않습니다. macOS에서는 문서 작업, lightweight preprocessing, STL inspection 정도만 권장합니다.
+macOS is not recommended for CUDA-based 2DGS execution. On macOS, use the repository mainly for documentation, lightweight preprocessing, or STL inspection.
 
 ## Planned Execution
 
-최종 코드 통합 후 목표 실행 방식:
+After final source integration, the target execution flow is:
 
 ```bash
 git clone https://github.com/GachonAMADEUS/AMADEUS.git
@@ -32,7 +32,7 @@ docker build -t amadeus-2dgs docker/2dgs
 python src/pipeline.py --input data/samples/foot_video.mp4
 ```
 
-예상 결과:
+Expected output layout:
 
 ```text
 outputs/
@@ -49,41 +49,41 @@ outputs/
 
 ## Model Weights
 
-대용량 모델 파일은 Git에 직접 커밋하지 않습니다.
+Large model files should not be committed to Git.
 
-예상 파일:
+Expected model files:
 
-- YOLOv11n-seg fine-tuned weights
+- Fine-tuned YOLOv11n-seg weights
 - SAM checkpoint
-- optional COLMAP vocab tree
+- Optional COLMAP vocabulary tree
 
-배포 방식:
+Possible distribution channels:
 
 - Hugging Face repository
 - GitHub Release assets
-- private shared drive for internal test data
+- Private shared drive for internal test data
 
-`models/` 폴더는 모델을 내려받는 위치로만 사용합니다.
+The `models/` directory is reserved as the local download location.
 
 ## Docker Scope
 
-Docker 환경에는 다음을 포함할 예정입니다.
+The Docker runtime is expected to include:
 
-- CUDA runtime/devel image
+- CUDA runtime/development image
 - COLMAP or COLMAP-compatible runtime
 - 2D Gaussian Splatting dependencies
 - Open3D/Trimesh mesh postprocessing dependencies
-- Anaconda/conda terms acceptance where required by build environment
+- Conda/Anaconda terms acceptance where required by the build environment
 
 ## What Should Not Be Committed
 
-- raw foot videos
-- private dataset images
-- trained weights if too large or license-restricted
-- generated STL/PLY/3MF outputs
+- Raw foot videos
+- Private dataset images
+- Large trained weights
+- Generated STL/PLY/3MF outputs
 - Python virtual environments
 - Docker build cache
 
 ## Current Status
 
-이 저장소에는 현재 PDF 기반 공개 워크플로우 문서를 먼저 정리했습니다. 최신 OOM/COLMAP 수정본은 이후 `src/`와 `docker/` 구조에 맞춰 반영합니다.
+This repository currently contains public workflow documentation and a clean scaffold. The latest OOM/COLMAP fixes and final implementation source will be added under the `src/` and `docker/` structure later.

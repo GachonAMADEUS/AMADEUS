@@ -1,66 +1,76 @@
 # Capture Guide
 
-발 영상 품질은 COLMAP/2DGS 성공률에 직접적인 영향을 줍니다. 이 문서는 AMADEUS 파이프라인을 위한 촬영 가이드입니다.
+Video capture quality directly affects COLMAP and 2DGS success. Use this guide when recording a foot and checkerboard scene for the AMADEUS pipeline.
 
 ## Required Objects
 
-- 사용자 발
-- A4 체커보드 또는 실제 크기를 알고 있는 checkerboard
-- 스마트폰 RGB 카메라
+- User's foot
+- A4 checkerboard or another checkerboard with known physical dimensions
+- Smartphone RGB camera
+
+## Recommended Capture Orbit
+
+Move the camera slowly around the foot while keeping both the foot and checkerboard visible. Adjacent frames should overlap enough for COLMAP to match visual features.
+
+![Recommended camera orbit around the foot](assets/capture-orbit-guide.png)
 
 ## Recommended Scene
 
-- 밝고 균일한 조명
-- 반사가 적은 바닥
-- 발과 체커보드가 모두 프레임 안에 들어오는 구도
-- 배경에 너무 많은 움직임이 없는 환경
+- Use bright and even lighting.
+- Avoid strong reflections on the floor.
+- Keep the foot and checkerboard inside the frame.
+- Avoid moving background objects.
+- Keep the checkerboard fixed during the entire capture.
 
 ## Foot Position
 
-- 발 전체가 영상 내내 잘 보여야 합니다.
-- 발가락, 발등, 발바닥 기준면이 최대한 가려지지 않게 촬영합니다.
-- scale 계산을 위해 체커보드는 발과 같은 장면 안에 놓습니다.
+- The full foot should remain visible throughout the video.
+- Toes, instep, heel, and the bottom reference plane should not be heavily occluded.
+- Place the checkerboard next to or under the foot so it belongs to the same reconstructed scene.
 
 ## Camera Motion
 
-권장 방식:
+Recommended:
 
-- 발 주변을 천천히 한 바퀴 돌며 촬영
-- 각 프레임이 이전 프레임과 충분히 겹치도록 이동
-- 급격한 흔들림이나 초점 변화 피하기
+- Move slowly around the foot in a smooth orbit.
+- Keep enough overlap between consecutive frames.
+- Maintain focus and stable exposure.
+- Capture the foot from multiple side and top-side angles.
 
-피해야 할 방식:
+Avoid:
 
-- 너무 빠른 회전
-- 발 또는 체커보드가 화면 밖으로 자주 나가는 촬영
-- 그림자가 발 전체를 덮는 촬영
-- 흐릿한 프레임이 많은 촬영
+- Fast rotation
+- Sudden camera shakes
+- Frames where the foot or checkerboard leaves the image
+- Strong shadows covering the foot
+- Long stretches of blurry frames
 
 ## Checkerboard
 
-체커보드는 scale factor 계산의 기준입니다.
+The checkerboard is the scale reference.
 
-권장:
+Recommended:
 
-- A4 용지에 인쇄된 checkerboard
-- 실제 크기 기록
-- 발 옆 또는 아래쪽에 고정
-- 영상 전체에서 여러 각도로 관측되도록 배치
+- Use a printed A4 checkerboard.
+- Record the real physical dimensions.
+- Keep it flat and fixed.
+- Make sure its corners and grid lines are visible across many frames.
 
 ## Failure Reduction Checklist
 
-촬영 후 다음 조건을 확인합니다.
+After recording, check the following:
 
-- 발과 체커보드가 동시에 보이는 프레임이 충분한가?
-- 너무 어둡거나 밝은 프레임이 적은가?
-- 모션 블러가 심하지 않은가?
-- 발 표면만 너무 매끈하게 보이지 않고 추적 가능한 특징이 있는가?
-- 체커보드 코너/격자가 뚜렷하게 보이는가?
+- Are there enough frames where the foot and checkerboard are visible together?
+- Are most frames sharp and well exposed?
+- Is motion blur limited?
+- Are there enough trackable visual features for COLMAP?
+- Are the checkerboard corners/grid lines clear?
+- Is the camera orbit slow enough for adjacent-frame overlap?
 
 ## Privacy
 
-발 영상은 개인 생체 정보에 가까운 데이터로 취급합니다.
+Foot videos should be treated as private biometric-like data.
 
-- 원본 영상은 공개 저장소에 올리지 않습니다.
-- 공개 demo에는 동의받은 샘플 또는 synthetic/demo 데이터를 사용합니다.
-- 모델 학습 데이터셋은 별도 권한과 배포 정책을 둡니다.
+- Do not commit raw videos to a public repository.
+- Use consented demo data or synthetic/sample data for public demos.
+- Keep training datasets under a separate access and release policy.
