@@ -224,6 +224,30 @@ button:disabled {
   line-height: 1.08;
 }
 
+.process-title-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.process-spinner {
+  width: clamp(58px, 8vw, 82px);
+  height: clamp(58px, 8vw, 82px);
+  object-fit: contain;
+  border-radius: 50%;
+  animation: spinFoot 1.25s linear infinite;
+}
+
+@keyframes spinFoot {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .progress-meta {
   display: flex;
   justify-content: space-between;
@@ -320,7 +344,26 @@ button:disabled {
 }
 
 .model-picker {
-  display: none;
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.model-picker span {
+  color: #8b95a1;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.model-picker select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #e5e8eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #191f28;
+  font-weight: 900;
+  padding: 0 12px;
 }
 
 .download-group {
@@ -357,6 +400,11 @@ button:disabled {
 .download-link.disabled {
   pointer-events: none;
   opacity: 0.42;
+}
+
+.result-sidebar .secondary-action {
+  width: 100%;
+  margin-top: 14px;
 }
 
 .viewer-wrap {

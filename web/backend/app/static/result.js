@@ -6,12 +6,13 @@ const canvas = document.querySelector("#viewer");
 const statusText = document.querySelector("#resultStatus");
 const modelName = document.querySelector("#modelName");
 const modelSelect = document.querySelector("#modelSelect");
-const resultMessage = document.querySelector("#resultMessage");
+const printButton = document.querySelector("#printButton");
 const downloadLinks = {
   stl: document.querySelector("#downloadStl"),
   reportJson: document.querySelector("#downloadReportJson"),
   reportTxt: document.querySelector("#downloadReportTxt"),
 };
+const modelOptions = [{ name: "Prototype STL", type: "prototype", url: "" }];
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf8fafc);
 
@@ -35,8 +36,8 @@ keyLight.castShadow = true;
 scene.add(keyLight);
 
 const material = new THREE.MeshStandardMaterial({
-  color: 0xf2f4f6,
-  roughness: 0.68,
+  color: 0xf1c6a7,
+  roughness: 0.7,
   metalness: 0.02,
 });
 
@@ -66,7 +67,7 @@ function addEllipsoid(name, position, scale, rotation = [0, 0, 0]) {
 
 function showPrototypeModel() {
   clearModel();
-  modelName.textContent = "Prototype mesh";
+  modelName.textContent = "Prototype STL";
   controls.target.set(0, 0.2, 0);
   camera.position.set(4.5, 3, 6);
 
@@ -135,14 +136,6 @@ function loadStlModel(model) {
   );
 }
 
-const floor = new THREE.Mesh(
-  new THREE.CircleGeometry(3.4, 96),
-  new THREE.MeshStandardMaterial({ color: 0xe5e8eb, roughness: 0.92 })
-);
-floor.rotation.x = -Math.PI / 2;
-floor.receiveShadow = true;
-scene.add(floor);
-
 async function loadModelOptions() {
   try {
     const response = await fetch("/api/models/stl");
@@ -152,24 +145,38 @@ async function loadModelOptions() {
     const models = data.models || [];
 
     models.forEach((model) => {
-      const option = document.createElement("option");
-      option.value = model.url;
-      option.textContent = model.name;
-      option.dataset.name = model.name;
-      modelSelect.appendChild(option);
-    });
-
-    modelSelect.addEventListener("change", () => {
-      const selected = models.find((model) => model.url === modelSelect.value);
-      if (!selected) {
-        showPrototypeModel();
-        return;
-      }
-      loadStlModel(selected);
+      const displayName = model.name === "UMesh_final_foot_03.stl" ? "내가 준 STL" : model.name;
+      addModelOption({
+        name: displayName,
+        type: "stl",
+        url: model.url,
+      });
     });
   } catch {
     showPrototypeModel();
   }
+}
+
+function addModelOption(model) {
+  if (modelOptions.some((option) => option.url === model.url && option.type === model.type)) {
+    return;
+  }
+
+  modelOptions.push(model);
+  const option = document.createElement("option");
+  option.value = model.type === "prototype" ? "prototype" : model.url;
+  option.textContent = model.name;
+  modelSelect.appendChild(option);
+}
+
+function selectModel(value) {
+  const selected = modelOptions.find((model) => (model.type === "prototype" ? "prototype" : model.url) === value);
+  if (!selected || selected.type === "prototype") {
+    showPrototypeModel();
+    return;
+  }
+
+  loadStlModel(selected);
 }
 
 function statusLabel(status) {
@@ -223,19 +230,32 @@ async function loadResultStatus() {
     if (!response.ok) return;
     const result = await response.json();
     statusText.textContent = statusLabel(result.status);
-    resultMessage.textContent = result.error_message || result.message || "";
     applyResultDownloads(result);
 
     if (result.model_stl_url) {
-      loadStlModel({
+      const uploadModel = {
         name: "Generated STL",
+        type: "stl",
         url: result.model_stl_url,
-      });
+      };
+      addModelOption(uploadModel);
+      modelSelect.value = result.model_stl_url;
+      loadStlModel(uploadModel);
     }
   } catch {
     statusText.textContent = "프로토타입";
   }
 }
+
+modelSelect.addEventListener("change", () => {
+  selectModel(modelSelect.value);
+});
+
+printButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  alert("전송되었습니다!");
+  window.location.href = "/";
+});
 
 showPrototypeModel();
 loadResultStatus();

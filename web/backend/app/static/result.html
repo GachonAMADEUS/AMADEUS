@@ -25,9 +25,9 @@
           </div>
         </dl>
         <label class="model-picker" for="modelSelect">
-          <span>Static STL 선택</span>
+          <span>STL 모델 선택</span>
           <select id="modelSelect">
-            <option value="">Prototype mesh</option>
+            <option value="prototype">Prototype STL</option>
           </select>
         </label>
         <div class="download-group" aria-label="Pipeline outputs">
@@ -35,8 +35,7 @@
           <a id="downloadReportJson" class="download-link disabled" href="#">JSON 리포트</a>
           <a id="downloadReportTxt" class="download-link disabled" href="#">TXT 리포트</a>
         </div>
-        <p id="resultMessage" class="status-text"></p>
-        <a href="/" class="secondary-action">새 영상 업로드</a>
+        <a href="/" id="printButton" class="secondary-action">프린트</a>
       </aside>
 
       <section class="viewer-wrap" aria-label="3D model viewer">
