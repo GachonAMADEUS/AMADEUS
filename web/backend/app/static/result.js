@@ -136,27 +136,6 @@ function loadStlModel(model) {
   );
 }
 
-async function loadModelOptions() {
-  try {
-    const response = await fetch("/api/models/stl");
-    if (!response.ok) return;
-
-    const data = await response.json();
-    const models = data.models || [];
-
-    models.forEach((model) => {
-      const displayName = model.name === "UMesh_final_foot_03.stl" ? "내가 준 STL" : model.name;
-      addModelOption({
-        name: displayName,
-        type: "stl",
-        url: model.url,
-      });
-    });
-  } catch {
-    showPrototypeModel();
-  }
-}
-
 function addModelOption(model) {
   if (modelOptions.some((option) => option.url === model.url && option.type === model.type)) {
     return;
@@ -259,5 +238,4 @@ printButton.addEventListener("click", (event) => {
 
 showPrototypeModel();
 loadResultStatus();
-loadModelOptions();
 animate();
