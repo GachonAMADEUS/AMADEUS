@@ -1,9 +1,12 @@
 from datetime import datetime
+import json
+import math
 import os
 from pathlib import Path
 import shlex
 import shutil
 import subprocess
+import time
 from uuid import uuid4
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, HTTPException, UploadFile
@@ -27,6 +30,7 @@ JOBS_DIR.mkdir(parents=True, exist_ok=True)
 PIPELINE_CMD_TEMPLATE = os.getenv("AMADEUS_PIPELINE_CMD", "").strip()
 PIPELINE_CWD = os.getenv("AMADEUS_PIPELINE_CWD", "").strip()
 PIPELINE_ARTIFACT_DIRS = os.getenv("AMADEUS_PIPELINE_ARTIFACT_DIRS", "").strip()
+DEMO_DURATION_SECONDS = int(os.getenv("AMADEUS_DEMO_DURATION_SECONDS", "90"))
 
 ARTIFACT_FILENAMES = {
     "stl": "model.stl",
@@ -205,6 +209,159 @@ def collect_pipeline_artifacts(record: Upload, job_dir: Path, output_dir: Path, 
     record.result_report_path = copy_artifact(report_txt, artifacts_dir / ARTIFACT_FILENAMES["txt"])
 
 
+def ellipsoid_vertices(
+    center: tuple[float, float, float],
+    scale: tuple[float, float, float],
+    lat_segments: int,
+    lon_segments: int,
+) -> list[list[tuple[float, float, float]]]:
+    vertices: list[list[tuple[float, float, float]]] = []
+    cx, cy, cz = center
+    sx, sy, sz = scale
+
+    for lat in range(lat_segments + 1):
+        theta = math.pi * lat / lat_segments
+        row: list[tuple[float, float, float]] = []
+        for lon in range(lon_segments + 1):
+            phi = 2 * math.pi * lon / lon_segments
+            x = cx + sx * math.sin(theta) * math.cos(phi)
+            y = cy + sy * math.cos(theta)
+            z = cz + sz * math.sin(theta) * math.sin(phi)
+            row.append((x, y, z))
+        vertices.append(row)
+
+    return vertices
+
+
+def add_ellipsoid_triangles(
+    triangles: list[tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]]],
+    center: tuple[float, float, float],
+    scale: tuple[float, float, float],
+    *,
+    lat_segments: int = 16,
+    lon_segments: int = 32,
+):
+    vertices = ellipsoid_vertices(center, scale, lat_segments, lon_segments)
+
+    for lat in range(lat_segments):
+        for lon in range(lon_segments):
+            p1 = vertices[lat][lon]
+            p2 = vertices[lat + 1][lon]
+            p3 = vertices[lat + 1][lon + 1]
+            p4 = vertices[lat][lon + 1]
+
+            if lat != 0:
+                triangles.append((p1, p2, p4))
+            if lat != lat_segments - 1:
+                triangles.append((p2, p3, p4))
+
+
+def write_demo_foot_stl(path: Path):
+    triangles: list[tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]]] = []
+    parts = [
+        ((0.0, 0.22, 0.0), (1.05, 0.28, 2.05)),
+        ((0.0, 0.32, -1.52), (0.82, 0.42, 0.64)),
+        ((0.0, 0.42, -0.35), (0.82, 0.36, 0.95)),
+        ((0.0, 0.38, 1.25), (1.08, 0.34, 0.72)),
+        ((-0.58, 0.45, 1.88), (0.25, 0.21, 0.34)),
+        ((-0.28, 0.48, 2.03), (0.28, 0.23, 0.42)),
+        ((0.04, 0.5, 2.08), (0.3, 0.24, 0.46)),
+        ((0.36, 0.47, 1.98), (0.26, 0.22, 0.38)),
+        ((0.64, 0.43, 1.82), (0.22, 0.2, 0.31)),
+    ]
+
+    for center, scale in parts:
+        add_ellipsoid_triangles(triangles, center, scale)
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as stl:
+        stl.write("solid amadeus_demo_foot\n")
+        for triangle in triangles:
+            stl.write("  facet normal 0 0 0\n")
+            stl.write("    outer loop\n")
+            for vertex in triangle:
+                stl.write(f"      vertex {vertex[0]:.6f} {vertex[1]:.6f} {vertex[2]:.6f}\n")
+            stl.write("    endloop\n")
+            stl.write("  endfacet\n")
+        stl.write("endsolid amadeus_demo_foot\n")
+
+
+def run_demo_pipeline(db: Session, record: Upload, job_dir: Path, output_dir: Path):
+    artifacts_dir = job_dir / "artifacts"
+    logs_dir = job_dir / "logs"
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    logs_dir.mkdir(parents=True, exist_ok=True)
+
+    stdout_path = logs_dir / ARTIFACT_FILENAMES["stdout"]
+    stderr_path = logs_dir / ARTIFACT_FILENAMES["stderr"]
+    stl_path = artifacts_dir / ARTIFACT_FILENAMES["stl"]
+    report_json_path = artifacts_dir / ARTIFACT_FILENAMES["json"]
+    report_txt_path = artifacts_dir / ARTIFACT_FILENAMES["txt"]
+
+    record.stdout_path = str(stdout_path)
+    record.stderr_path = str(stderr_path)
+    record.result_stl_path = str(stl_path)
+    record.result_json_path = str(report_json_path)
+    record.result_report_path = str(report_txt_path)
+    db.commit()
+
+    demo_steps = [
+        ("frame filtering", 15),
+        ("segmentation", 35),
+        ("3D reconstruction", 60),
+        ("mesh postprocessing", 82),
+        ("STL export", 95),
+    ]
+    step_delay = max(1, DEMO_DURATION_SECONDS) / len(demo_steps)
+
+    stdout_lines = [
+        "AMADEUS demo mode started.",
+        "No AMADEUS_PIPELINE_CMD was configured, so a prototype STL will be generated.",
+    ]
+
+    for stage, progress in demo_steps:
+        set_job_state(db, record, status="running", progress=progress, stage=stage)
+        stdout_lines.append(f"{datetime.utcnow().isoformat()} {stage} {progress}%")
+        time.sleep(step_delay)
+
+    write_demo_foot_stl(stl_path)
+
+    report = {
+        "mode": "demo",
+        "status": "completed",
+        "input_file": record.original_filename,
+        "duration_seconds": DEMO_DURATION_SECONDS,
+        "artifacts": {
+            "stl": str(stl_path),
+            "report_json": str(report_json_path),
+            "report_txt": str(report_txt_path),
+        },
+        "note": "This is a placeholder preview result. Connect AMADEUS_PIPELINE_CMD for the real reconstruction pipeline.",
+    }
+
+    report_json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    report_txt_path.write_text(
+        "\n".join(
+            [
+                "AMADEUS Demo Report",
+                "===================",
+                f"Input file: {record.original_filename}",
+                f"Duration: {DEMO_DURATION_SECONDS} seconds",
+                "Result: Prototype STL generated successfully.",
+                "",
+                "This report is generated by demo mode.",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    stdout_path.write_text("\n".join(stdout_lines) + "\n", encoding="utf-8")
+    stderr_path.write_text("", encoding="utf-8")
+
+    record.finished_at = datetime.utcnow()
+    set_job_state(db, record, status="completed", progress=100, stage="completed")
+
+
 def run_pipeline_job(upload_id: int):
     db = SessionLocal()
     try:
@@ -228,20 +385,7 @@ def run_pipeline_job(upload_id: int):
 
         command_template = default_pipeline_command()
         if not command_template:
-            set_job_state(
-                db,
-                record,
-                status="failed",
-                progress=100,
-                stage="pipeline command missing",
-                error_message=(
-                    "AMADEUS_PIPELINE_CMD is not configured. Set it to the final pipeline command, "
-                    "for example: python /pipeline/pipeline.py --input-video {input_video} "
-                    "--output-dir {output_dir}"
-                ),
-            )
-            record.finished_at = datetime.utcnow()
-            db.commit()
+            run_demo_pipeline(db, record, job_dir, output_dir)
             return
 
         context = {

@@ -55,6 +55,21 @@ python /pipeline/pipeline.py --input-video {input_video} --output-dir {output_di
 
 If your final pipeline uses different arguments, keep the web code unchanged and only change `AMADEUS_PIPELINE_CMD`.
 
+## Demo Mode
+
+If `AMADEUS_PIPELINE_CMD` is empty, the app runs in demo mode:
+
+1. The uploaded MP4 is accepted normally.
+2. The processing page shows staged progress for about 90 seconds.
+3. The job is marked as completed.
+4. A placeholder foot-shaped STL is generated and loaded in the result viewer.
+
+Change the demo duration if needed:
+
+```bash
+export AMADEUS_DEMO_DURATION_SECONDS=60
+```
+
 ## Run With Docker Compose
 
 From this `web/` directory:
