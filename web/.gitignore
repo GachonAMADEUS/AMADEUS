@@ -6,6 +6,7 @@ backend/app/uploads/*
 !backend/app/uploads/.gitkeep
 backend/app/jobs/*
 !backend/app/jobs/.gitkeep
+backend/app/*.db
 backend/app/static/*.stl
 backend/app/static/**/*.stl
 !backend/app/static/models/.gitkeep

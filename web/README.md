@@ -76,6 +76,33 @@ By default, `../src` is mounted into the container as `/pipeline`, so the expect
 src/pipeline.py
 ```
 
+## Run Locally Without Docker
+
+Use this mode when Docker Desktop is not installed or `docker` is not available.
+
+From the repository root:
+
+```bash
+cd web
+python3 -m venv .venv
+.venv/bin/pip install -r backend/requirements.txt
+.venv/bin/uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+Local mode stores upload metadata in:
+
+```text
+web/backend/app/amadeus_local.db
+```
+
+That local database is ignored by Git.
+
 ## Output Locations
 
 Each upload creates a local job directory:
