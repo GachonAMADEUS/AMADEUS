@@ -21,6 +21,8 @@ From a smartphone foot video to a printable, scale-corrected 3D foot mesh.
   <a href="docs/REPRODUCIBILITY.md">Reproducibility</a>
   ·
   <a href="docs/OUTPUT_SPEC.md">Output Spec</a>
+  ·
+  <a href="web/README.md">Web Runner</a>
 </p>
 
 </div>
@@ -31,7 +33,7 @@ From a smartphone foot video to a printable, scale-corrected 3D foot mesh.
 
 AMADEUS is an AI-assisted foot morphology analysis and custom shoe-making support system. It reconstructs a user's foot in 3D from a smartphone RGB video, recovers real-world scale using a checkerboard reference, postprocesses the mesh, exports STL/JSON outputs, and validates the result through Bambu Studio slicing and 3D printing.
 
-This repository currently contains the public workflow documentation and project scaffold. The latest implementation source code will be added to this structure after final team integration.
+This repository contains the public workflow documentation, project scaffold, and a browser-based web runner that can execute the final AMADEUS pipeline command after team integration.
 
 ## What AMADEUS Produces
 
@@ -141,6 +143,13 @@ AMADEUS/
     .gitkeep
   outputs/
     .gitkeep
+  web/
+    README.md
+    docker-compose.yml
+    backend/
+      app/
+        main.py
+        static/
 ```
 
 ## Documentation
@@ -151,6 +160,7 @@ AMADEUS/
 | [Capture Guide](docs/CAPTURE_GUIDE.md) | How to record foot/checkerboard videos that work well with COLMAP and 2DGS |
 | [Reproducibility Plan](docs/REPRODUCIBILITY.md) | Target runtime, Docker plan, model-weight handling, and execution assumptions |
 | [Output Specification](docs/OUTPUT_SPEC.md) | Expected intermediate and final files |
+| [Web Runner](web/README.md) | Browser upload flow that runs a configurable pipeline command and serves STL/3MF/report outputs |
 
 ## Core Technologies
 
@@ -168,11 +178,24 @@ AMADEUS/
 ```text
 Documentation scaffold        done
 Repository structure          done
-Final pipeline source         pending integration
-Docker runtime                pending integration
+Web pipeline runner           done
+Final pipeline source         pending team code replacement
+Docker runtime                web runner done / CUDA pipeline pending
 Model weights                 external release planned
 Public demo data              pending privacy review
 ```
+
+## Web Runner Quick Start
+
+Place the final integrated pipeline script at `src/pipeline.py`, or point `AMADEUS_PIPELINE_CMD` to the correct script path.
+
+```bash
+cd web
+export AMADEUS_PIPELINE_CMD='python /pipeline/pipeline.py --input-video {input_video} --output-dir {output_dir}'
+docker compose up --build
+```
+
+Open `http://localhost:8000`, upload an `.mp4`, and the result page will expose generated STL, 3MF, reports, and logs.
 
 ## Open Source Release Plan
 

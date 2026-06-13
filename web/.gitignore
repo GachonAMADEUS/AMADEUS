@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+
+backend/app/uploads/*
+!backend/app/uploads/.gitkeep
+backend/app/jobs/*
+!backend/app/jobs/.gitkeep
+backend/app/static/*.stl
+backend/app/static/**/*.stl
+!backend/app/static/models/.gitkeep
+
+.env

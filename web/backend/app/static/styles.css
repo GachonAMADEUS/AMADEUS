@@ -1,0 +1,384 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+  color: #25211d;
+  background: #f6f2ec;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.shell {
+  width: min(1120px, calc(100% - 40px));
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  align-items: center;
+  gap: 32px;
+}
+
+.upload-shell {
+  grid-template-columns: 1fr 440px;
+}
+
+.brand-panel h1,
+.process-panel h1,
+.result-sidebar h1 {
+  margin: 0;
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.lead {
+  max-width: 620px;
+  margin: 28px 0 0;
+  color: #5e574e;
+  font-size: 20px;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: #2c6e68;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.tool-panel,
+.process-panel {
+  border: 1px solid #ded2c5;
+  border-radius: 8px;
+  background: #fffaf4;
+  box-shadow: 0 24px 70px rgba(58, 45, 32, 0.12);
+  padding: 28px;
+}
+
+.panel-heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.panel-heading h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.panel-heading p,
+.result-sidebar p {
+  margin: 8px 0 0;
+  color: #71685f;
+  line-height: 1.65;
+}
+
+.step-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #2c6e68;
+  color: white;
+  font-weight: 800;
+}
+
+.upload-form {
+  display: grid;
+  gap: 16px;
+}
+
+.drop-zone {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 26px;
+  border: 1px dashed #ab9b8c;
+  border-radius: 8px;
+  background: #f8efe5;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.drop-zone.drag-over {
+  border-color: #2c6e68;
+  background: #e7f1ef;
+  box-shadow: inset 0 0 0 2px rgba(44, 110, 104, 0.18);
+  transform: translateY(-2px);
+}
+
+.drop-zone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.upload-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #d34f38;
+  color: white;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.drop-zone strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+
+.drop-zone small,
+.status-text {
+  color: #776d64;
+}
+
+button,
+.secondary-action {
+  min-height: 48px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: #25211d;
+  color: white;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.process-shell {
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+}
+
+.process-panel {
+  padding: clamp(28px, 5vw, 56px);
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 42px 0 12px;
+  color: #5d554d;
+  font-weight: 800;
+}
+
+.progress-track {
+  height: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eadfD2;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2c6e68, #d34f38);
+  transition: width 0.35s ease;
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 22px 0 28px;
+}
+
+.stage {
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ded2c5;
+  border-radius: 8px;
+  color: #71685f;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.stage.active {
+  border-color: #2c6e68;
+  background: #e7f1ef;
+  color: #1e5550;
+}
+
+.result-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  background: #f6f2ec;
+}
+
+.result-sidebar {
+  padding: 38px 28px;
+  border-right: 1px solid #ded2c5;
+  background: #fffaf4;
+}
+
+.result-sidebar h1 {
+  font-size: 44px;
+  line-height: 1.05;
+}
+
+.result-sidebar dl {
+  display: grid;
+  gap: 12px;
+  margin: 28px 0;
+}
+
+.result-sidebar dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eadfd2;
+}
+
+.result-sidebar dt {
+  color: #71685f;
+}
+
+.result-sidebar dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.model-picker {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.model-picker span {
+  color: #71685f;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.model-picker select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cdbdad;
+  border-radius: 8px;
+  background: white;
+  color: #25211d;
+  font: inherit;
+  font-weight: 700;
+  padding: 0 12px;
+}
+
+.download-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 8px 0 18px;
+}
+
+.download-link {
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cdbdad;
+  border-radius: 8px;
+  background: white;
+  color: #25211d;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+}
+
+.download-link:not(.disabled):hover {
+  border-color: #2c6e68;
+  background: #e7f1ef;
+  color: #1e5550;
+}
+
+.download-link.disabled {
+  pointer-events: none;
+  opacity: 0.42;
+}
+
+.viewer-wrap {
+  min-height: 100vh;
+}
+
+#viewer {
+  width: 100%;
+  height: 100vh;
+  display: block;
+}
+
+@media (max-width: 860px) {
+  .shell,
+  .upload-shell {
+    grid-template-columns: 1fr;
+    align-content: center;
+    padding: 32px 0;
+  }
+
+  .brand-panel h1 {
+    font-size: 62px;
+  }
+
+  .result-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .result-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #ded2c5;
+  }
+
+  .viewer-wrap,
+  #viewer {
+    min-height: 62vh;
+    height: 62vh;
+  }
+}
+
+@media (max-width: 560px) {
+  .shell {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .stage-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .progress-meta {
+    display: grid;
+  }
+}

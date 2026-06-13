@@ -1,0 +1,9 @@
+app/uploads/*
+!app/uploads/.gitkeep
+app/jobs/*
+!app/jobs/.gitkeep
+app/static/*.stl
+app/static/**/*.stl
+__pycache__/
+*.py[cod]
+.venv/

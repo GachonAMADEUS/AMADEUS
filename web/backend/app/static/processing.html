@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Processing - Amadeus</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell process-shell">
+      <section class="process-panel">
+        <p class="eyebrow">Amadeus pipeline</p>
+        <h1>발 모델을 생성하는 중입니다</h1>
+
+        <div class="progress-meta">
+          <span id="stageLabel">전처리 준비 중</span>
+          <span id="timeLeft">남은 시간 02:00</span>
+        </div>
+
+        <div class="progress-track" aria-label="Processing progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div class="stage-grid">
+          <div class="stage active" data-stage="0">전처리</div>
+          <div class="stage" data-stage="1">3DGS 재구성</div>
+          <div class="stage" data-stage="2">후처리</div>
+          <div class="stage" data-stage="3">STL 변환</div>
+        </div>
+
+        <p id="errorText" class="status-text"></p>
+        <button id="skipButton" type="button" disabled>결과 준비 중</button>
+      </section>
+    </main>
+
+    <script src="/static/processing.js"></script>
+  </body>
+</html>

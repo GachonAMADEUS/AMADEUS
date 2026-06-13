@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Result - Amadeus</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="result-layout">
+      <aside class="result-sidebar">
+        <p class="eyebrow">Amadeus result</p>
+        <h1>3D 발 모델</h1>
+        <p>
+          파이프라인이 생성한 STL을 확인하고, Bambu 업로드용 3MF와 처리 리포트를 내려받습니다.
+        </p>
+        <dl>
+          <div>
+            <dt>상태</dt>
+            <dd id="resultStatus">완료</dd>
+          </div>
+          <div>
+            <dt>모델</dt>
+            <dd id="modelName">Prototype mesh</dd>
+          </div>
+        </dl>
+        <label class="model-picker" for="modelSelect">
+          <span>Static STL 선택</span>
+          <select id="modelSelect">
+            <option value="">Prototype mesh</option>
+          </select>
+        </label>
+        <div class="download-group" aria-label="Pipeline outputs">
+          <a id="downloadStl" class="download-link disabled" href="#">STL 다운로드</a>
+          <a id="download3mf" class="download-link disabled" href="#">3MF 다운로드</a>
+          <a id="downloadReportJson" class="download-link disabled" href="#">JSON 리포트</a>
+          <a id="downloadReportTxt" class="download-link disabled" href="#">TXT 리포트</a>
+          <a id="downloadStdout" class="download-link disabled" href="#">stdout.log</a>
+          <a id="downloadStderr" class="download-link disabled" href="#">stderr.log</a>
+        </div>
+        <p id="resultMessage" class="status-text"></p>
+        <a href="/" class="secondary-action">새 영상 업로드</a>
+      </aside>
+
+      <section class="viewer-wrap" aria-label="3D model viewer">
+        <canvas id="viewer"></canvas>
+      </section>
+    </main>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.169.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="/static/result.js"></script>
+  </body>
+</html>

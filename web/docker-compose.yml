@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: ./backend
+    container_name: amadeus-app
+    ports:
+      - "8000:8000"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: amadeus
+      MYSQL_USER: amadeus
+      MYSQL_PASSWORD: amadeus_password
+      AMADEUS_PIPELINE_CMD: ${AMADEUS_PIPELINE_CMD:-}
+      AMADEUS_PIPELINE_CWD: ${AMADEUS_PIPELINE_CWD:-/pipeline}
+      AMADEUS_PIPELINE_ARTIFACT_DIRS: ${AMADEUS_PIPELINE_ARTIFACT_DIRS:-}
+    volumes:
+      - ./backend/app/uploads:/app/app/uploads
+      - ./backend/app/jobs:/app/app/jobs
+      - ./backend/app/static:/app/app/static
+      - ../src:/pipeline
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    container_name: amadeus-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: amadeus
+      MYSQL_USER: amadeus
+      MYSQL_PASSWORD: amadeus_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "amadeus", "-pamadeus_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-data:
