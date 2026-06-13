@@ -26,7 +26,7 @@ function getMp4File(files) {
 fileInput.addEventListener("change", () => {
   const file = fileInput.files[0];
   selectedFile = file || null;
-  fileLabel.textContent = file ? file.name : "맨발 360도 촬영 영상 선택";
+  fileLabel.textContent = file ? file.name : "여기에 촬영 영상 업로드";
 });
 
 ["dragenter", "dragover"].forEach((eventName) => {

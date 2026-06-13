@@ -9,14 +9,11 @@ const modelSelect = document.querySelector("#modelSelect");
 const resultMessage = document.querySelector("#resultMessage");
 const downloadLinks = {
   stl: document.querySelector("#downloadStl"),
-  project: document.querySelector("#download3mf"),
   reportJson: document.querySelector("#downloadReportJson"),
   reportTxt: document.querySelector("#downloadReportTxt"),
-  stdout: document.querySelector("#downloadStdout"),
-  stderr: document.querySelector("#downloadStderr"),
 };
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf6f2ec);
+scene.background = new THREE.Color(0xf8fafc);
 
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
 camera.position.set(4.5, 3, 6);
@@ -38,8 +35,8 @@ keyLight.castShadow = true;
 scene.add(keyLight);
 
 const material = new THREE.MeshStandardMaterial({
-  color: 0xd8b59b,
-  roughness: 0.72,
+  color: 0xf2f4f6,
+  roughness: 0.68,
   metalness: 0.02,
 });
 
@@ -140,7 +137,7 @@ function loadStlModel(model) {
 
 const floor = new THREE.Mesh(
   new THREE.CircleGeometry(3.4, 96),
-  new THREE.MeshStandardMaterial({ color: 0xebe2d7, roughness: 0.9 })
+  new THREE.MeshStandardMaterial({ color: 0xe5e8eb, roughness: 0.92 })
 );
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
@@ -198,11 +195,8 @@ function setDownloadLink(link, url) {
 
 function applyResultDownloads(result) {
   setDownloadLink(downloadLinks.stl, result.model_stl_url);
-  setDownloadLink(downloadLinks.project, result.project_3mf_url);
   setDownloadLink(downloadLinks.reportJson, result.report_json_url);
   setDownloadLink(downloadLinks.reportTxt, result.report_txt_url);
-  setDownloadLink(downloadLinks.stdout, result.stdout_url);
-  setDownloadLink(downloadLinks.stderr, result.stderr_url);
 }
 
 function resize() {
