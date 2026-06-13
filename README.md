@@ -87,15 +87,28 @@ Early physical print of the reconstructed foot mesh. These views are included to
   </tr>
 </table>
 
-## Benchmark Snapshot
+## Benchmark Results
 
-The numbers below are provisional placeholders for presentation layout only. They should be replaced with measured values after controlled testing.
-
-| Method | Cost ratio | Time required | Measured foot length | Measured foot width | Error rate | Output artifact | Automation level |
-| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
-| Existing manual workflow (GT) | 100% | 2-3 days | 260.0 mm | 98.0 mm | Reference | Manual measurement / mold | Low |
-| Commercial 3D scanner | 350-600% | 20-40 min | 260.8 mm | 98.6 mm | 0.8% | Scanner mesh / report | Medium |
-| AMADEUS pipeline | 15-25% | 45-90 min | 261.5 mm | 99.1 mm | 1.5-2.5% | STL / JSON / 3MF | High |
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/benchmarks/size-result.png" alt="Size result comparison table" width="100%"><br>
+      <sub>Size result</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/benchmarks/time-result.png" alt="Time result comparison table" width="100%"><br>
+      <sub>Time result</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/benchmarks/cost-result.png" alt="Cost result comparison table" width="100%"><br>
+      <sub>Cost result</sub>
+    </td>
+  </tr>
+</table>
 
 ## Why This Matters
 
