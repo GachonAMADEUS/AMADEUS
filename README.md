@@ -52,6 +52,39 @@ flowchart LR
   G --> H["Bambu validation"]
 ```
 
+## Prototype Output Gallery
+
+Early physical print of the reconstructed foot mesh. These views are included to show the intended final artifact: a tangible, scale-corrected foot model that can support downstream custom shoe-last design and fit validation.
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/assets/results/printed-foot-002.jpg" alt="Printed foot side profile" width="100%"><br>
+      <sub>Side profile</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/assets/results/printed-foot-003.jpg" alt="Printed foot opposite side profile" width="100%"><br>
+      <sub>Opposite side profile</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/assets/results/printed-foot-001.jpg" alt="Printed foot top oblique view" width="100%"><br>
+      <sub>Top oblique view</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/assets/results/printed-foot-004.jpg" alt="Printed foot dorsal detail view" width="100%"><br>
+      <sub>Dorsal detail</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/assets/results/printed-foot-005.jpg" alt="Printed foot heel and ankle view" width="55%"><br>
+      <sub>Heel and ankle view</sub>
+    </td>
+  </tr>
+</table>
+
 ## Why This Matters
 
 | Existing bottleneck | AMADEUS direction |
@@ -82,6 +115,12 @@ AMADEUS/
     OUTPUT_SPEC.md
     assets/
       capture-orbit-guide.png
+      results/
+        printed-foot-001.jpg
+        printed-foot-002.jpg
+        printed-foot-003.jpg
+        printed-foot-004.jpg
+        printed-foot-005.jpg
   src/
     .gitkeep
   docker/
