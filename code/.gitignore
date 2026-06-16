@@ -1,0 +1,25 @@
+# Local runtime inputs and model weights
+assets/
+tools/
+vocab_tree*.bin
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Pipeline state and generated outputs
+.run_pipeline_state
+dataset/
+colmap/
+colmap_work/
+colmap_work_tmp/
+2dgs_output/
+2dgs_post_output/
+output/
+print_output/
+legacy/
+result.json
+
+# Python cache
+__pycache__/
+*.py[cod]

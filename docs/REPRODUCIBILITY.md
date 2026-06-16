@@ -1,6 +1,6 @@
 # Reproducibility Plan
 
-AMADEUS aims to provide a Docker-based runtime so the same pipeline can be reproduced on another workstation.
+AMADEUS provides the current runnable CLI pipeline under `code/`. The heaviest 2DGS stage runs through a CUDA Docker image, while host-side preprocessing, COLMAP, postprocessing, scaling, and slicing use local runtime tools.
 
 ## Target Environment
 
@@ -11,13 +11,14 @@ Recommended environment:
 - Docker
 - NVIDIA Container Toolkit
 - Python 3.10+
-- Bambu Studio or OrcaSlicer
+- COLMAP CLI
+- OrcaSlicer CLI, unless slicing is skipped
 
 macOS is not recommended for CUDA-based 2DGS execution. On macOS, use the repository mainly for documentation, lightweight preprocessing, or STL inspection.
 
-## Planned Execution
+## Execution
 
-After final source integration, the target execution flow is:
+Clone the repository and run the pipeline from `code/`:
 
 ```bash
 git clone https://github.com/GachonAMADEUS/AMADEUS.git
@@ -25,12 +26,15 @@ cd AMADEUS
 ```
 
 ```bash
-docker build -t amadeus-2dgs docker/2dgs
+cd code
+pip install -r requirements.txt
 ```
 
 ```bash
-python src/pipeline.py --input data/samples/foot_video.mp4
+./run_pipeline.sh "foot_video.mp4"
 ```
+
+The script builds the 2DGS Docker image from `code/Dockerfile` if the expected local image tag is missing. Use `SKIP_SLICING=1` to run without OrcaSlicer.
 
 Expected output layout:
 
@@ -47,15 +51,16 @@ outputs/
   sliced_project.3mf
 ```
 
-## Model Weights
+## Runtime Assets
 
 Large model files should not be committed to Git.
 
 Expected model files:
 
-- Fine-tuned YOLOv11n-seg weights
-- SAM checkpoint
-- Optional COLMAP vocabulary tree
+- `code/assets/best.pt`
+- `code/assets/sam_vit_h_4b8939.pth`
+- `code/vocab_tree_flickr100K_words32K.bin`
+- `code/tools/orca/...` for OrcaSlicer CLI support
 
 Possible distribution channels:
 
@@ -63,17 +68,17 @@ Possible distribution channels:
 - GitHub Release assets
 - Private shared drive for internal test data
 
-The `models/` directory is reserved as the local download location.
+The top-level `models/` directory remains reserved for shared release assets, but the current `run_pipeline.sh` expects its runtime files under `code/`.
 
 ## Docker Scope
 
-The Docker runtime is expected to include:
+The 2DGS Docker runtime includes:
 
 - CUDA runtime/development image
-- COLMAP or COLMAP-compatible runtime
 - 2D Gaussian Splatting dependencies
-- Open3D/Trimesh mesh postprocessing dependencies
 - Conda/Anaconda terms acceptance where required by the build environment
+
+COLMAP, host Python dependencies, and OrcaSlicer remain host-side requirements for the current CLI flow.
 
 ## What Should Not Be Committed
 
@@ -86,4 +91,4 @@ The Docker runtime is expected to include:
 
 ## Current Status
 
-This repository currently contains public workflow documentation and a clean scaffold. The latest OOM/COLMAP fixes and final implementation source will be added under the `src/` and `docker/` structure later.
+This repository currently contains public workflow documentation, the web runner scaffold, and the runnable CLI implementation under `code/`.

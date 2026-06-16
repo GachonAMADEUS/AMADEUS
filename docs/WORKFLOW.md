@@ -112,27 +112,26 @@ Reference examples:
 - A4 paper: `297 mm x 210 mm`
 - Checker square size: configurable per printed board
 
-## 7. Measurement and Export
+## 7. Scale Correction and Export
 
-After scaling, the mesh can be measured and exported.
+After scaling, the mesh is exported with processing metadata for review and downstream printing.
 
-Expected measurements:
+Current exported metadata:
 
-- Foot length
-- Foot width
-- Instep height
-- Bounding box
-- Mesh volume/area where available
+- Checkerboard scale report
+- Mesh repair and floating-region report
+- Scaled mesh bounds and extents
+- Slicing status and support recommendation
 
 Final outputs:
 
-- Final foot STL
-- Measurement JSON
-- Processing report JSON/TXT
+- Scaled final foot STL
+- Pipeline manifest JSON
+- Optional sliced 3MF
 
-## 8. Bambu Studio Validation
+## 8. OrcaSlicer Validation
 
-The final STL is loaded into Bambu Studio or OrcaSlicer for slicing and print validation.
+The final STL is sliced with OrcaSlicer when the local CLI runtime is installed and slicing is not skipped.
 
 Validation checklist:
 

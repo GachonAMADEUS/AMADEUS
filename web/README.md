@@ -47,13 +47,13 @@ Supported placeholders:
 | `{upload_id}` | Database upload ID |
 | `{original_filename}` | Original uploaded filename |
 
-Recommended final pipeline interface:
+Current CLI pipeline entrypoint:
 
 ```bash
-python /pipeline/pipeline.py --input-video {input_video} --output-dir {output_dir}
+bash /pipeline/run_pipeline.sh {input_video}
 ```
 
-If your final pipeline uses different arguments, keep the web code unchanged and only change `AMADEUS_PIPELINE_CMD`.
+The web runner remains a wrapper around `AMADEUS_PIPELINE_CMD`. To run the current CLI pipeline inside the web container, mount `../code` as `/pipeline` and make the required GPU, Docker, COLMAP, model, and OrcaSlicer runtime assets available to that container or host environment.
 
 ## Demo Mode
 
@@ -75,7 +75,8 @@ export AMADEUS_DEMO_DURATION_SECONDS=60
 From this `web/` directory:
 
 ```bash
-export AMADEUS_PIPELINE_CMD='python /pipeline/pipeline.py --input-video {input_video} --output-dir {output_dir}'
+export AMADEUS_PIPELINE_CMD='bash /pipeline/run_pipeline.sh {input_video}'
+export AMADEUS_PIPELINE_ARTIFACT_DIRS='/pipeline/print_output'
 docker compose up --build
 ```
 
@@ -85,10 +86,10 @@ Then open:
 http://localhost:8000
 ```
 
-By default, `../src` is mounted into the container as `/pipeline`, so the expected script path is:
+The current `docker-compose.yml` still mounts `../src` as `/pipeline` for scaffold/demo use. For the runnable CLI pipeline, change that mount to `../code:/pipeline` before enabling the command above.
 
 ```text
-src/pipeline.py
+code/run_pipeline.sh
 ```
 
 ## Run Locally Without Docker

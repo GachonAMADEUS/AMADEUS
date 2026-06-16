@@ -31,15 +31,15 @@ From a smartphone foot video to a printable, scale-corrected 3D foot mesh.
 
 ## Overview
 
-AMADEUS is an AI-assisted foot morphology analysis and custom shoe-making support system. It reconstructs a user's foot in 3D from a smartphone RGB video, recovers real-world scale using a checkerboard reference, postprocesses the mesh, exports STL/JSON outputs, and validates the result through Bambu Studio slicing and 3D printing.
+AMADEUS is an AI-assisted foot morphology analysis and custom shoe-making support system. It reconstructs a user's foot in 3D from a smartphone RGB video, recovers real-world scale using a checkerboard reference, postprocesses the mesh, exports STL/JSON outputs, and validates the result through OrcaSlicer-based slicing and 3D printing.
 
-This repository contains the public workflow documentation, project scaffold, and a browser-based web runner that can execute the final AMADEUS pipeline command after team integration.
+This repository contains the public workflow documentation, the current runnable CLI pipeline under `code/`, and a browser-based web runner scaffold for later integration.
 
 ## What AMADEUS Produces
 
 | Input | Core Reconstruction | Output |
 | --- | --- | --- |
-| Smartphone video of a foot and checkerboard | YOLO/SAM segmentation, COLMAP SfM, 2D Gaussian Splatting, mesh repair, scale correction | Real-scale STL, measurement JSON, processing report, slicer-ready 3MF |
+| Smartphone video of a foot and checkerboard | YOLO/SAM segmentation, COLMAP SfM, 2D Gaussian Splatting, mesh repair, scale correction | Real-scale STL, pipeline manifest/report JSON, slicer-ready 3MF |
 
 ## Workflow At A Glance
 
@@ -139,6 +139,11 @@ AMADEUS/
         printed-foot-003.jpg
         printed-foot-004.jpg
         printed-foot-005.jpg
+  code/
+    run_pipeline.sh
+    Dockerfile
+    requirements.txt
+    *.py
   src/
     .gitkeep
   docker/
@@ -177,7 +182,7 @@ AMADEUS/
 | Camera pose estimation | COLMAP SfM |
 | 3D reconstruction | 2D Gaussian Splatting |
 | Mesh postprocessing | Open3D, Trimesh |
-| Print validation | Bambu Studio, OrcaSlicer |
+| Print validation | OrcaSlicer |
 
 ## Current Status
 
@@ -185,29 +190,28 @@ AMADEUS/
 Documentation scaffold        done
 Repository structure          done
 Web pipeline runner           done
-Final pipeline source         pending team code replacement
-Docker runtime                web runner done / CUDA pipeline pending
+Runnable CLI pipeline         done under code/
+Docker runtime                2DGS CUDA image defined in code/Dockerfile
 Model weights                 external release planned
 Public demo data              pending privacy review
 ```
 
-## Web Runner Quick Start
+## CLI Quick Start
 
-Place the final integrated pipeline script at `src/pipeline.py`, or point `AMADEUS_PIPELINE_CMD` to the correct script path.
+The current runnable pipeline entrypoint is `code/run_pipeline.sh`.
 
 ```bash
-cd web
-export AMADEUS_PIPELINE_CMD='python /pipeline/pipeline.py --input-video {input_video} --output-dir {output_dir}'
-docker compose up --build
+cd code
+./run_pipeline.sh "input_video.mp4"
 ```
 
-Open `http://localhost:8000`, upload an `.mp4`, and the result page will expose generated STL, 3MF, reports, and logs.
+Large runtime assets such as YOLO/SAM weights, COLMAP vocabulary files, input videos, and OrcaSlicer binaries are not committed. See [Reproducibility](docs/REPRODUCIBILITY.md) and [Web Runner](web/README.md) for runtime setup notes.
 
 ## Open Source Release Plan
 
 1. Publish workflow and execution documentation.
-2. Add the final pipeline source code after team integration.
-3. Provide a Docker-based reproducible runtime.
+2. Maintain the runnable `code/run_pipeline.sh` CLI pipeline.
+3. Improve Docker-based reproducibility around the existing CUDA/2DGS runtime.
 4. Link trained YOLO segmentation weights through Hugging Face or release assets.
 5. Add public demo input/output samples where privacy and file-size constraints allow.
 

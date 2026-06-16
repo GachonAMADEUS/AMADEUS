@@ -1,0 +1,23 @@
+# Host Python dependencies for ./run_pipeline.sh.
+#
+# Non-Python runtime requirements are still needed separately:
+# - COLMAP CLI: used by run_colmap.py and undistort_colmap.py
+# - Docker with NVIDIA GPU support: used for the 2DGS training/extraction step
+# - OrcaSlicer CLI: used by finalize_print_pipeline.py unless --skip-slicing is set
+# - CUDA-capable PyTorch environment: pipeline_before_colmap.py currently runs
+#   YOLO/SAM with device="cuda"
+
+numpy
+trimesh
+open3d
+pymeshlab
+pymeshfix
+opencv-python-headless
+Pillow
+mapbox-earcut
+scipy
+scikit-image
+torch
+torchvision
+ultralytics
+git+https://github.com/facebookresearch/segment-anything.git
